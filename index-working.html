@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proove you are a human</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 0;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        #image-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Create a responsive grid */
+            gap: 10px; /* Space between images */
+            padding: 10px;
+            max-width: 800px; /* Maximum width of the container */
+            margin: auto; /* Center the container */
+        }
+
+        img {
+            width: 100%; /* Make images responsive */
+            height: auto; /* Maintain aspect ratio */
+            border: 5px solid transparent; /* Default border */
+            cursor: pointer; /* Change cursor to pointer on hover */
+            transition: border-color 0.3s; /* Smooth transition for border color */
+        }
+
+        img.selected {
+            border-color: #ff5733; /* Highlight color */
+        }
+        button {
+            margin-top: 20px; /* Space above the button */
+            margin-bottom: 50px; /* Space above the button */
+            padding: 50px 80px; /* Button padding */
+            font-size: 16px; /* Button font size */
+            cursor: pointer; /* Change cursor to pointer */
+            background-color: #ff0000; /* Button color */
+            color: white; /* Button text color */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            transition: background-color 0.3s; /* Smooth transition for background color */
+        }
+
+        button:hover {
+            background-color: #ff0000; /* Darken on hover */
+        }
+    </style>
+</head>
+<body>
+    <h1>Prove you are a human</h1>
+    <div id="image-container"></div>
+    <button id="refresh-button">Prove it</button> <!-- Refresh button -->
+
+    <script>
+        const imageContainer = document.getElementById('image-container');
+        
+        // Function to load images
+        function loadImages() {
+            fetch('imageList.txt')
+                .then(response => response.text())
+                .then(data => {
+                    const imagePaths = data.split('\n').filter(Boolean); // Split and filter empty lines
+                    const totalImages = 9;
+                    const selectedImages = [];
+
+                    // Clear previous images
+                    imageContainer.innerHTML = '';
+
+                    for (let i = 0; i < totalImages; i++) {
+                        const randIndex = Math.floor(Math.random() * imagePaths.length);
+                        const img = document.createElement('img');
+                        img.src = imagePaths[randIndex];
+                        img.alt = `Random Image ${i + 1}`;
+                        img.addEventListener('pointerdown', () => toggleImageSelection(img)); // Use pointerdown for touch and mouse
+                        imageContainer.appendChild(img);
+                        selectedImages.push(imagePaths[randIndex]); // Store selected images if needed
+                    }
+                })
+                .catch(err => console.error(err));
+        }
+
+        // Function to toggle image selection
+        function toggleImageSelection(image) {
+            image.classList.toggle('selected'); // Toggle the 'selected' class on click
+        }
+
+        // Load images when the page loads
+        loadImages();
+
+        // Add event listener to refresh button using pointer events
+        document.getElementById('refresh-button').addEventListener('pointerdown', loadImages);
+    </script>
+</body>
+</html>
